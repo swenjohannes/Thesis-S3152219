@@ -23,7 +23,8 @@ tic()
 dt = T/N;
 alpha = H + 0.5; 
 
-
+N= 1000;
+alpha = 0.65
 i_ = 0:(N - 1);
 d1 = (N - i_) .^ alpha - (N - i_ - 1) .^ alpha; 
 d2 = (N - i_) .^ (alpha - 1) - (N - i_ - 1) .^ (alpha - 1);

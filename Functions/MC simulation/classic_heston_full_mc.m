@@ -1,7 +1,7 @@
 function [S, V] = classic_heston_full_mc(S0, V0, rho, kappa, theta, T, r, nu, npath, N)
 % Similar to the lecture slides (quantitative finance)
 %
-%  Usage:      [S, V] = heston_approx_mc(..);
+%  Usage:      [S, V] = classic_heston_full_mc(..);
 %               
 %  Inputs:      S0      Intial price
 %               V0      Initial volatility
