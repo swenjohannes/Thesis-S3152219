@@ -46,8 +46,8 @@ fig_abs_diff = figure; sgtitle("Absolute differences in prices of rough Heston v
 fig_rel_diff = figure; sgtitle("Relative differences in prices of rough Heston versus Heston")
 
 for i = 1:length(types)
-    prices_c = barrier_prices_cm(S_c, K, B, types(i), 'p'); %classic
-    prices_r = barrier_prices_cm(S_r, K, B, types(i), 'p'); %rough
+    prices_c = barrier_prices_cm(S_c, K, B, types(i), 1); %classic
+    prices_r = barrier_prices_cm(S_r, K, B, types(i), 1); %rough
     
     
     abs_diff = prices_r - prices_c;
@@ -84,3 +84,5 @@ for i = 1:length(types)
     xlabel('Strike prices')
     title(titles(i));
 end
+
+%Checks
