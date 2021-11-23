@@ -1,3 +1,4 @@
+%% Classic model
 %Tests for calls
 call = 1; 
 prices_ui = barrier_prices_cm(S_c, K, B, "uo", call); 
@@ -14,8 +15,6 @@ allColEqual(up);
 isalmost(up, down);
 isalmost(up(:, 1), vannilla);
 
-
-
 %Tests for puts
 call = -1;
 prices_ui = barrier_prices_cm(S_c, K, B, "uo", call); 
@@ -26,10 +25,43 @@ prices_do = barrier_prices_cm(S_c, K, B, "do", call);
 up = prices_ui + prices_uo;
 down = prices_di + prices_do;
 
-vannilla = vanilla_prices(S_c, K, call);
+vanilla = vanilla_prices(S_c, K, call);
 
 allColEqual(up);
 isalmost(up, down);
-isalmost(up(:, 1), vannilla);
+isalmost(up(:, 1), vanilla);
+
+%% Rough model
+%Tests for calls
+call = 1; 
+prices_ui = barrier_prices_cm(S_r, K, B, "uo", call); 
+prices_uo = barrier_prices_cm(S_r, K, B, "ui", call); 
+prices_di = barrier_prices_cm(S_r, K, B, "di", call); 
+prices_do = barrier_prices_cm(S_r, K, B, "do", call); 
+
+up = prices_ui + prices_uo;
+down = prices_di + prices_do;
+
+vanilla = vanilla_prices(S_r, K, 1);
+
+allColEqual(up);
+isalmost(up, down);
+isalmost(up(:, 1), vanilla);
+
+%Tests for puts
+call = -1;
+prices_ui = barrier_prices_cm(S_r, K, B, "uo", call); 
+prices_uo = barrier_prices_cm(S_r, K, B, "ui", call); 
+prices_di = barrier_prices_cm(S_r, K, B, "di", call); 
+prices_do = barrier_prices_cm(S_r, K, B, "do", call); 
+
+up = prices_ui + prices_uo;
+down = prices_di + prices_do;
+
+vanilla = vanilla_prices(S_r, K, call);
+
+allColEqual(up);
+isalmost(up, down);
+isalmost(up(:, 1), vanilla);
 
 

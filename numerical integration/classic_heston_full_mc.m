@@ -1,7 +1,7 @@
-function [S, V] = rough_heston_full_mc(S0, V0, rho, kappa, theta, T, r, nu, H, npath, N)
-% Uses the discritation scheme as presented in Emre Erkan 2020.
+function [S, V] = classic_heston_full_mc(S0, V0, rho, kappa, theta, T, r, nu, npath, N)
+% Similar to the lecture slides (quantitative finance)
 %
-%  Usage:      [S, V] = rough_heston_full_mc(..);
+%  Usage:      [S, V] = classic_heston_full_mc(..);
 %               
 %  Inputs:      S0      Intial price
 %               V0      Initial volatility
@@ -11,7 +11,6 @@ function [S, V] = rough_heston_full_mc(S0, V0, rho, kappa, theta, T, r, nu, H, n
 %               T       time to maturity
 %               r       riskfree interest rate
 %               nu      .. 
-%               H       roughness parameter
 %               npath  number of paths to be simulated
 %               N      number of steps 
 %  Output:      S      N x npath matrix of simulated prices
@@ -23,16 +22,13 @@ tic()
 dt = T/N;
 C = [1,rho; rho, 1];
 L = chol(C);
-lambda = Lambda (H , N + 1);
 
 %Simulate random draws:
 S = S0 * ones(N + 1, npath);
 V = V0 * ones(N + 1, npath); 
-W = randn(N, npath / 2);
-B = FGN ( lambda , npath / 2 )';  %Random FBM draws
 
 for i = 1:N
-    z = vertcat(W(i, :), B(i, :));
+    z = randn(2, npath / 2);
     z = [z, -z]; %antithetic samplic
     Z = L * z;  
 

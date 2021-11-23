@@ -14,10 +14,6 @@ function [psi_k, chi_k] = vanilla_cos_series_coef_v1(a, b, c, d, k)
 
  Version : 1.0 (22.03.2019)
 
-
- phi_hes = heston_char_function_v1(mu, lambda, u_bar, u_0, eta, rho, omega, T)
-
-
  Inputs : a             - Cosine argument (lower truncation bound) 
         : b             - Cosine argument (upper truncation bound)
         : c             - Lower integration bound for Psi/Chi (Eqs. 20, 21)
