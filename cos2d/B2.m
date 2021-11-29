@@ -1,13 +1,16 @@
 function B2 = B2(w1, w2, kappa, rho, eta, tau)
+
+eta2 = eta ^ 2;
 beta = kappa - 1i * rho * eta * w1;
-D = sqrt(beta ^ 2 + eta * w1 * (1i + w1));
-h = (beta - D - 1i .* w2 * eta ^ 2) / (beta + D - 1i * w2 .* eta ^ 2);
+D = sqrt(beta ^ 2 + eta2 * w1 * (1i + w1));
 
-%To ease up calculations
-BmD = beta - D;
-hemdt = h  * exp (-D * tau);
+h = (beta - D - 1i * w2 * eta2) / (beta + D - 1i * w2 * eta2);
+hemdt = h  * exp (-D * tau); %To ease up calculations
 
-%Return values
-B2 =1 / eta * (BmD - (beta + D) * hemdt) / (1 - hemdt);
+B2 = (beta - D - (beta + D) * hemdt) / (eta2 * (1 - hemdt)); %Get B2
 end
-
+% 
+% %Test
+% w1 = 100 * pbma;
+% w2 = -100 * pbma;
+% tau = 0.5;

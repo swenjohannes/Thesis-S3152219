@@ -1,16 +1,32 @@
 function J = get_H(kappa, rho, eta, dt, alpha, a, b, N)
-    %to ease up notation
-    bma = b - a;
+    bma = b - a;  %to ease up notation
     pbma = pi / bma;  
-    B2_ = @(w1, w2) B2(w1 * pbma, w2 * pbma, kappa, rho, eta, dt);
-
+    
     J(:,:, N) = zeros(N); %empty matrice
 
     k2 = 0:(N-1);
     for j1 = 0:(N-1)
         for j2 = 0:(N-1)
-                J(:, j2 + 1, j1 + 1) =  2 / (b - a) * exp(alpha * 1i * j2 * -a *pbma) ...
-                    .* chi_H(a, b, B2_(j1, alpha * j2), k2, a, b);
+                B = B2(j1 * pbma, alpha * j2 * pbma, kappa, rho, eta, dt);
+                J(:, j2 + 1, j1 + 1) =  2 / bma * exp(alpha * 1i * j2 * -a *pbma) ...
+                                     .* chi_H(a, b, B, k2, a, b);
         end
     end
 end           
+
+
+% 
+% Check for equality of chi_H and integral
+% 
+% alpha = 1;
+% j1 = 7;
+% j2 = 1;
+% k2 = 1;
+%  
+% B = B2(j1 * pbma, alpha * j2 * pbma, kappa, rho, eta, dt);
+%   2 / bma * exp(alpha * 1i * j2 * -a *pbma) ...
+%                      .* chi_H(a, b, B, k2, a, b)
+
+%  chi_H(a, b, B, k2, a, b)
+% integrand = @(y) exp(y * B) .* cos(k2 * pbma * (y - a));
+% integral(integrand, a, b)

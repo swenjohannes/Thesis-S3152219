@@ -2,29 +2,31 @@
 clear 
 clc
 
-N = 128;
+N = 10;
 k = 0:(N-1);
 
 S0 = 100;
 K = 80;
 H = 1000;
 
-v0 = 0.2;
+v0 = 0.04;
 r = 0.00;
 eta = 0.7;
 rho = -0.7;
-theta = 0.2;
+theta = 0.04;
 kappa = 1.5;
 
 x0 = log(S0 / K);
 h = log(H / K);
 
 T = 1;
-Nobs = 1;
+Nobs = 2;
 dt = T/ Nobs;
 
-a = -3;
-b =3.2; 
+[c1, c2, ~]  = heston_cumulants_v1(r, kappa, theta, v0, eta, rho, T);
+[a, b]= cos_truncation_range_v2(c1,c2,0,12);
+
+%Global constants used in all functions
 %% COS 2D
 
 %Create empty V dataframe
@@ -59,3 +61,5 @@ end
 F = F(x0, v0, kappa, rho, eta, theta, r, dt, a, b, N);
 
 v0 = exp(-r * dt) * weighted_sum_mat(0.5 * F , V(:, :, 1))
+
+

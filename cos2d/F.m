@@ -13,10 +13,10 @@ for k1 = 0:(N - 1)
     end
 end
 
-
-
 %To efficiently compute the matrices  use k1' + k2
-Fp = exp(-1i * (k1' + k2) * pi * a / (b - a));
-Fm = exp(-1i * (k1' - k2) * pi * a / (b - a));
+k1 = 0:(N - 1);
+k2 = 0:(N - 1);
+Fp = exp(-1i * (k1' + k2) * a * pbma);
+Fm = exp(-1i * (k1' - k2) * a * pbma);
 F = real(phi_p .* Fp + phi_m .* Fm);
 end
