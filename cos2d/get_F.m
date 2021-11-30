@@ -1,4 +1,4 @@
-function F = F(x, v, kappa, rho, eta, theta, r, tau, a, b, N)
+function F = get_F(x, v, kappa, rho, eta, theta, r, tau, a, b, N)
 bma = b - a;
 pbma = pi / bma;
 

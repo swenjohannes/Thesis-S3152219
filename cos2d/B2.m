@@ -9,7 +9,7 @@ hemdt = h  * exp (-D * tau); %To ease up calculations
 
 B2 = (beta - D - (beta + D) * hemdt) / (eta2 * (1 - hemdt)); %Get B2
 end
-% 
+ 
 % %Test
 % w1 = 100 * pbma;
 % w2 = -100 * pbma;
