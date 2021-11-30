@@ -16,7 +16,7 @@ end
 %To efficiently compute the matrices  use k1' + k2
 k1 = 0:(N - 1);
 k2 = 0:(N - 1);
-Fp = exp(-1i * (k1' + k2) * a * pbma);
-Fm = exp(-1i * (k1' - k2) * a * pbma);
-F = real(phi_p .* Fp + phi_m .* Fm);
+Fp = phi_p .* exp(-1i * (k1' + k2) * a * pbma);
+Fm = phi_m .*exp(-1i * (k1' - k2) * a * pbma);
+F = real(Fp + Fm);
 end
