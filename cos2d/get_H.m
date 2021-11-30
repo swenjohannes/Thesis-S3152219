@@ -30,7 +30,11 @@ function H = get_H(kappa, rho, eta, dt, alpha, a, b, N)
                 B = B2(j1 * pbma, alpha * j2 * pbma, kappa, rho, eta, dt);
                 %Compute Moir 4.32, chi_H returns a vector over all k2's
                 H(:, j2 + 1, j1 + 1) =  2 / bma * exp(alpha * 1i * j2 * -a *pbma) ...
-                                     .* chi_H(a, b, B, 0:(N-1), a, b);
+                                     .* chi_H(a, b, B, k2, a, b);
         end
     end
 end           
+
+
+
+
