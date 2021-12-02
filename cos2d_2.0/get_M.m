@@ -1,5 +1,5 @@
 function M = get_M(u1, u2, a, b, N)
-bma = a - b;
+bma = b - a;
 pbma = pi / bma;
 
 M = zeros(N);
