@@ -3,7 +3,7 @@ clear
 clc
 
 %% Parameter set 1
-N = 300;
+N = 500;
 k = 0:(N-1);
 
 S0 = 100;
@@ -28,9 +28,9 @@ dt = T/ Nobs;
 [c1, c2, ~]  = heston_cumulants_v1(r, kappa, theta, v0, eta, rho, T);
 [a1, b1]= cos_truncation_range_v2(c1,c2,0,12);
 
-%V_mc = sort(mc_V(v0, kappa, theta, T, eta, 1e6, 1024));
-a2 =  0; %V_mc(100);
-b2 = 0.4; % V_mc(1e6 - 100);
+V_mc = sort(mc_V(v0, kappa, theta, T, eta, 1e6, 1024));
+a2 = V_mc(1000);
+b2 = V_mc(1e6 - 1000);
 
 %% COS 2D
 V(:, :, Nobs) = zeros(N);           %Create empty V dataframe
