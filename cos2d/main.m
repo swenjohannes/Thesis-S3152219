@@ -30,11 +30,38 @@ dt = T/ Nobs;
 %Global constants used in all functions
 %% COS 2D
 
-
 V(:, :, Nobs) = zeros(N);           %Create empty V dataframe
-V(:, :, Nobs) = V_T(h, a, b, K, N); %Store V(T_M) at M
+V(:, :, Nobs) = V_T(h, a, b, 0, b, K, N); %Store V(T_M) at M
+figure(1)
+surf(V(:, :, Nobs))
 
-%Obtain H positive and minus
+a1 = a;
+b1 = b;
+a2 = 0;
+b2 = b1;
+ypoint = 1000;
+kpoint = 20;
+y1 = linspace(a1,b1,ypoint)';
+dy1 = y1(2) - y1(1);
+y2 = linspace(a2,b2,ypoint)';
+dy2 = y2(2) - y2(1);
+v_test = K*((exp(y1)-1).*(y1>0).*(y1<h))*ones(1,ypoint);
+k1 = (0:kpoint-1)';
+k2 = (0:kpoint-1)';
+V_k1y2 = zeros(kpoint,ypoint);
+for i = 1:ypoint
+    V_k1y2(:,i) = cos(pi*k1*(y1-a1)'/(b1-a1))*v_test(:,i)*dy1;
+end
+V_k1k2 = zeros(kpoint,kpoint);
+for j = 1:kpoint
+    V_k1k2(j,:) = V_k1y2(j,:)*cos(pi*(y2-a2)*k2'/(b2-a2)) * 2/(b1-a1)*2/(b2-a2)*dy2;
+end
+figure(2)
+surf(V_k1k2)
+%figure(3)
+%surf(V_k1y2)
+
+%% Obtain H positive and minus
 Hp = get_H(kappa, rho, eta, dt, 1, a, b, N);
 Hm = get_H(kappa, rho, eta, dt, -1, a, b, N);
 
