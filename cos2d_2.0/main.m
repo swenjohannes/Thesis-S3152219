@@ -3,7 +3,7 @@ clear
 clc
 
 %% Parameters
-N = 6;
+N = 300;
 k = 0:(N-1);
 
 S0 = 100;

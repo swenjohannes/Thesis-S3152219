@@ -1,31 +1,22 @@
 function A = get_A(Hp, Hm, Wp, Wm, N)
+%{
+    Description: Computes the A matrix 
+    
+    Parameters:
+      Hp:       [j1 x j2 x k2 complex] Positive part of H matrix
+      Hm:       [j1 x j2 x k2 complex] Negative part of H matrix
+      Wp:       [j1 x j2 x k2 complex] Positive part of H matrix
+      Wm:       [j1 x j2 x k2 complex] Negative part of H matrix
+      N:        [1x1 real] Truncation argument
 
-A = zeros(N); %Empty frame
+    Output: 
+      A:        [j1 x k2] matrix containing weighted_sum(Hp * Wp + Hm * Wm)
+    
+    References:
 
-for j1 = 1:N
-    for k2 = 1:N
-        A(j1, k2) = weighted_sum(Hp(k2, :, j1) .* Wp(j1, :) + Hm(k2, :, j1) .* Wm(j1, :));
-    end
+%}
+
+Wp(:,1) = 0.5 * Wp(:,1);  % Set first j2 element of both W matrices to 
+Wm(:,1) = 0.5 * Wm(:,1);  % a half to compute the weighted sum!
+A = reshape(sum(Hp .* Wp + Hm .* Wm, 2), [N N]); %Take rowsums and remove 3D!
 end
-
-
-% Test
-% j1 = 6;
-% k2 = 1;
-% 
-% p = Hp(k2, :, j1) .* Wp(j1, :);
-% m = Hm(k2, :, j1) .* Wm(j1, :);
-% weighted_sum(p,m)
-% 
-
-% Test 2 : weighted sum checken
-% j1 = 10;
-% k2 = 5;
-% 
-% phi_A_ = @(j1, j2) phi_A(j1 * pbma, j2 * pbma, kappa, rho, eta, theta, r, dt);
-% 
-% Sum = 0.5 * (0.5 * V(j1, 1, 2) .* (Hp(k2, 1, j1) .* phi_A_(j1 - 1, 0) + Hm(k2, 1, j1) .* phi_A_(j1 - 1, 0)) );
-% for j2 = 2:N
-%     Sum = Sum + 0.5 * V(j1, j2, 2) .* (Hp(k2, j2, j1) .* phi_A_(j1 - 1, j2 - 1) + Hm(k2, j2, j1) .* phi_A_(j1 - 1, -j2 -1));
-% end
-% Sum
