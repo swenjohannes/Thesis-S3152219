@@ -3,7 +3,7 @@ clear
 clc
 
 %% Parameters
-N = 300;
+N = 6;
 k = 0:(N-1);
 
 S0 = 100;
@@ -12,7 +12,7 @@ L = 110; %Barrier level = L
 
 v0 = 0.2;
 r = 0.00;
-eta = 0.70;
+eta = 0.3;
 rho = -0.7;
 theta = 0.2;
 kappa = 1.5;
@@ -32,13 +32,12 @@ dt = T/ Nobs;
 %a2 = V_mc(1000);
 %b2 = V_mc(1e6 - 1000);
 
-a2 = 0;
-b2 = 1.5;
+a2 = 0.001;
+b2 = 2.5;
 
 %% COS 2D
 V(:, :, Nobs) = zeros(N);           %Create empty V dataframe
 V(:, :, Nobs) = V_T(h, a1, b1, a2, b2, K, N); %Store V(T_M) at M
-
 
 phi_Ap = phi_A(k, k, kappa, rho, eta, theta, r, dt, a1, b1, a2, b2);
 phi_Am = phi_A(k, -k, kappa, rho, eta, theta, r, dt, a1, b1, a2, b2);
@@ -55,7 +54,7 @@ if Nobs > 1
         Wm = 0.5 * exp(-r * dt) * phi_Am .* V(:, :, t + 1); %W minus
 
         A = get_A(Hp, Hm, Wp, Wm, N);      %Obtain A
-        A_ = A .* [0.5 repelem(1, N -1)]'; %Weight first row by a half!
+        A(1, :) = A(1, :) * 0.5; %Weight first row by a half!
         V(:, :, t) = real(Mp * A); %Compute the weighted sum in matrix form
 
     end

@@ -16,17 +16,17 @@ function M = get_M(x1, x2, a, b, N)
     References:
 
 %}
-pbma = pi / b - a;
+pbma = pi / (b - a);
 [k, j] = deal(0:(N-1));
 
 %% Compute MC
-jpk = k'+ j; %Compute in vectorized form
+jpk = j'+ k; %Compute in vectorized form
 Mc = 1 ./ jpk .* (exp(1i * jpk * (x2 - a) * pbma) ...
         - exp(1i * jpk * (x1 - a) * pbma));
 Mc(1,1) = 1i * pbma * (x2 - x1); %Correct NA terms
 
 %% Compute MS
-jmk = k'- j; %Compute in vectorized form
+jmk = (j' - k)'; %Compute in vectorized form
 Ms = 1 ./ jmk .* (exp(1i * jmk * (x2 - a) * pbma) ...
         - exp(1i * jmk * (x1 - a) * pbma));
 for idx = 1:length(k)

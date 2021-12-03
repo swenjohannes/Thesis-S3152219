@@ -14,3 +14,8 @@ end
 % w1 = 100 * pbma;
 % w2 = -100 * pbma;
 % tau = 0.5;
+ 
+% %Test
+% w1 = 100 * pbma;
+% w2 = -100 * pbma;
+% tau = 0.5;
