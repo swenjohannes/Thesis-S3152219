@@ -48,7 +48,7 @@ if Nobs > 1
     Hp = get_H(kappa, rho, eta, dt, 1, a1, b1, a2, b2, N);
     Hm = get_H(kappa, rho, eta, dt, -1, a1, b1, a2, b2, N);
 
-    Mp = get_M2(a1, h, a1, b1, N); %Obtain M
+    Mp = get_M(a1, h, a1, b1, N); %Obtain M
 
     for t = (Nobs - 1):-1:1
         Wp = 0.5 * exp(-r * dt) * phi_Ap .* V(:, :, t + 1); %W positive
