@@ -2,19 +2,19 @@
 clear 
 clc
 
-%% Parameter set 1
-N = 500;
+%% Parameters
+N = 100;
 k = 0:(N-1);
 
 S0 = 100;
 K = 80;
 L = 110; %Barrier level = L
 
-v0 = 0.04;
+v0 = 0.2;
 r = 0.00;
-eta = 0.30;
+eta = 0.70;
 rho = -0.7;
-theta = 0.04;
+theta = 0.2;
 kappa = 1.5;
 
 x0 = log(S0 / K);
@@ -28,16 +28,20 @@ dt = T/ Nobs;
 [c1, c2, ~]  = heston_cumulants_v1(r, kappa, theta, v0, eta, rho, T);
 [a1, b1]= cos_truncation_range_v2(c1,c2,0,12);
 
-V_mc = sort(mc_V(v0, kappa, theta, T, eta, 1e6, 1024));
-a2 = V_mc(1000);
-b2 = V_mc(1e6 - 1000);
+%V_mc = sort(mc_V(v0, kappa, theta, T, eta, 1e6, 1024));
+%a2 = V_mc(1000);
+%b2 = V_mc(1e6 - 1000);
+
+a2 = 0;
+b2 = 1.5;
 
 %% COS 2D
 V(:, :, Nobs) = zeros(N);           %Create empty V dataframe
 V(:, :, Nobs) = V_T(h, a1, b1, a2, b2, K, N); %Store V(T_M) at M
  
-phi_Ap = get_phi_A(kappa, rho, eta, theta, r, dt, a1, b1, a2, b2, N, 1);
-phi_Am = get_phi_A(kappa, rho, eta, theta, r, dt, a1, b1, a2, b2, N, -1);
+
+phi_Ap = phi_A(k, k, kappa, rho, eta, theta, r, dt, a1, b1, a2, b2);
+phi_Am = phi_A(k, -k, kappa, rho, eta, theta, r, dt, a1, b1, a2, b2);
 
 if Nobs > 1
     % %Obtain H positive and minus
