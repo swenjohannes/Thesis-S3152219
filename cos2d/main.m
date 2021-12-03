@@ -2,7 +2,7 @@
 clear 
 clc
 
-N = 200;
+N = 100;
 k = 0:(N-1);
 
 S0 = 100;
@@ -40,17 +40,13 @@ a1 = a;
 b1 = b;
 a2 = 0;
 b2 = b1;
-ypoint = 1000;
+ypoint = 100;
 kpoint = N;
 y1 = linspace(a1,b1,ypoint)';
-dy1 = y1(2) - y1(1);
 y2 = linspace(a2,b2,ypoint)';
-dy2 = y2(2) - y2(1);
 V_y1y2 = K*((exp(y1)-1).*(y1>0).*(y1<h))*ones(1,ypoint);
 k1 = (0:kpoint-1)';
 k2 = (0:kpoint-1)';
-ks1 = k1*pi/(b1-a1);
-ks2 = k2*pi/(b2-a2);
 
 V_k1k2 = cft2d(V_y1y2,kpoint,kpoint);
 
