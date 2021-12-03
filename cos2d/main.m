@@ -2,7 +2,7 @@
 clear 
 clc
 
-N = 20;
+N = 200;
 k = 0:(N-1);
 
 S0 = 100;
@@ -32,34 +32,37 @@ dt = T/ Nobs;
 
 V(:, :, Nobs) = zeros(N);           %Create empty V dataframe
 V(:, :, Nobs) = V_T(h, a, b, 0, b, K, N); %Store V(T_M) at M
+VT_an = V(:, :, Nobs);
 figure(1)
-surf(V(:, :, Nobs))
+surf(VT_an)
 
 a1 = a;
 b1 = b;
 a2 = 0;
 b2 = b1;
 ypoint = 1000;
-kpoint = 20;
+kpoint = N;
 y1 = linspace(a1,b1,ypoint)';
 dy1 = y1(2) - y1(1);
 y2 = linspace(a2,b2,ypoint)';
 dy2 = y2(2) - y2(1);
-v_test = K*((exp(y1)-1).*(y1>0).*(y1<h))*ones(1,ypoint);
+V_y1y2 = K*((exp(y1)-1).*(y1>0).*(y1<h))*ones(1,ypoint);
 k1 = (0:kpoint-1)';
 k2 = (0:kpoint-1)';
-V_k1y2 = zeros(kpoint,ypoint);
-for i = 1:ypoint
-    V_k1y2(:,i) = cos(pi*k1*(y1-a1)'/(b1-a1))*v_test(:,i)*dy1;
-end
-V_k1k2 = zeros(kpoint,kpoint);
-for j = 1:kpoint
-    V_k1k2(j,:) = V_k1y2(j,:)*cos(pi*(y2-a2)*k2'/(b2-a2)) * 2/(b1-a1)*2/(b2-a2)*dy2;
-end
+ks1 = k1*pi/(b1-a1);
+ks2 = k2*pi/(b2-a2);
+
+V_k1k2 = cft2d(V_y1y2,kpoint,kpoint);
+
 figure(2)
 surf(V_k1k2)
-%figure(3)
-%surf(V_k1y2)
+
+v_y1y2 = icft2d(V_k1k2,ypoint,ypoint);
+
+figure(3)
+surf(V_y1y2)
+figure(4)
+surf(v_y1y2)
 
 %% Obtain H positive and minus
 Hp = get_H(kappa, rho, eta, dt, 1, a, b, N);
