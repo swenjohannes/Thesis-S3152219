@@ -1,4 +1,4 @@
-function [prices] = vanilla_prices(S, K, call)
+function [prices] = vanilla_prices(S, K, call, r, T)
 %{
     Compute barrier prices from simulation results assuming 
     continious montioring.
@@ -9,10 +9,10 @@ function [prices] = vanilla_prices(S, K, call)
     output:     prices  M vector of prices 
 %}
 
-T = size(S,1);           %final step index
+T_idx = size(S,1);           %final step index
 M = size(K, 2);
 prices = zeros(M, 1);
 
 %Compute prices
-payoff = max(call * (S(T, :) - K'), 0);  %regular call x indicator
-prices = mean(payoff, 2);
+payoff = max(call * (S(T_idx, :) - K'), 0);  %regular call x indicator
+prices = mean(payoff, 2) * exp(-r * T);

@@ -1,18 +1,22 @@
-function phi = phi(x, v, w1, w2, kappa, rho, eta, theta, r, tau)
+function phi = phi(x, v, phi_A, B2, a1, b1, N)
+%{
+Description: Calculates the A part of the heston characteristic function.
 
-eta2 = eta ^ 2;
-beta = kappa - 1i * rho * eta * w1;
-D = sqrt(beta ^ 2 + eta2 * w1 * (1i + w1));
+Parameters:
+  x:        [1x1 real] Initial log stock price
+  v:        [1x1 real] Initial variance
+  phi_A:    [N x N]    Matrix of pre-computed phi_A values
+  B2:       [N x N]    Matrix of pre-computed B2 values
+  a1, b1:   [1x1 real] Cosine arguments of log spot price
+  N         [1x1 real] Truncation argument
 
-h = (beta - D - 1i * w2 * eta2) / (beta + D - 1i * w2 * eta2);
-hemdt = h  * exp (-D * tau); %To ease up calculations
+Output: 
+  phi:        [N x N] matrix containing all phi values
 
-B2 = (beta - D - (beta + D) * hemdt) / (eta2 * (1 - hemdt)); %Get B2
+References:
 
+%}
 
-A  = 1i * w1 * r * tau + ... %Compute A
-    kappa * theta / eta2 * ((beta - D) * tau - 2 * log((hemdt - 1) / (h - 1)));
-phi_A = exp(A);
-
-phi = exp(1i * w1 * x) * exp(B2 * v) * phi_A;
+w1 = (0:(N-1))' * pi / (b1 - a1);  %Turn w1 in w1* and make a column vector
+phi = exp(1i * w1 * x + B2 * v) .* phi_A; %Compute phi
 end

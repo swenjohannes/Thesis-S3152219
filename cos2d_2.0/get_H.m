@@ -1,4 +1,4 @@
-function H = get_H(kappa, rho, eta, dt, alpha, a1, b1, a2, b2, N)
+function H = get_H(alpha, B, a2, b2, N)
 %{
     Description: Computes a matrix containing all H(k2, j2, j1) values. 
     
@@ -18,12 +18,10 @@ function H = get_H(kappa, rho, eta, dt, alpha, a1, b1, a2, b2, N)
     References:
       - Moir 4.31 
 %}
-    pbma1 = pi / (b1 - a1);  
-    pbma2 = pi / (b2 - a2);  
-
+    pbma = pi / (b2 - a2);  
     k = 0:(N-1);           %To compute values in vector form
-    B = B2_v2(k, alpha * k, kappa, rho, eta, dt, a1, b1, a2, b2);
-    H = 2 / (b2 - a2) * exp(alpha * 1i * k * -a2 *pbma2) ...
+    
+    H = 2 / (b2 - a2) * exp(alpha * 1i * k * -a2 *pbma) ...
             .* chi_H(a2, b2, B, a2, b2, N);
 end           
 

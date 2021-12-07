@@ -1,4 +1,4 @@
-function [S, V] = classic_heston_full_mc(S0, V0, rho, kappa, theta, T, r, nu, npath, N)
+function [S, V] = classic_heston_full_mc_v2(S0, V0, rho, kappa, theta, T, r, q, eta, npath, N)
 % Similar to the lecture slides (quantitative finance)
 %
 %  Usage:      [S, V] = classic_heston_full_mc(..);
@@ -10,32 +10,30 @@ function [S, V] = classic_heston_full_mc(S0, V0, rho, kappa, theta, T, r, nu, np
 %               theta   mean of V
 %               T       time to maturity
 %               r       riskfree interest rate
-%               nu      .. 
+%               q       riskfree interest rate
+%               eta      .. 
 %               npath  number of paths to be simulated
 %               N      number of steps 
 %  Output:      S      N x npath matrix of simulated prices
 %               V      N x npath matrix of simulated volatilities
 
-tic()
-
-%Transformed parameters
-dt = T/N;
-
-
-%Simulate random draws:
-S = S0 * ones(N + 1, npath);
-V = V0 * ones(N + 1, npath); 
+dt = T/N;                               %Time delta
+S = S0 * ones(N + 1, npath);            %Matrix to store stock results
+V = V0 * ones(N + 1, npath);            %Matrix to store variance results
 
 for t = 1:N
-    Zs = randn(1, npath);
-    Zv = rho * Zs + sqrt(1 - rho ^2) * randn(1, npath);
+    z =  randn(1, npath/2);                             %antithetic sampling
+    Zs = [z, -z];                                       %stock errors
+    Zv = rho * Zs + sqrt(1 - rho ^2) * randn(1, npath); %variance error
 
-    S(t + 1, :) = S(t, :) .* exp(sqrt(V(t, :) * dt) .* Zs ... 
-                            - V(t, :) * dt  / 2);
+    S(t + 1, :) = S(t, :) + (r - q) * S(t, :) * dt + ... 
+                                sqrt(V(t, :) * dt) .* S(t, :) .* Zs;
+    
+    
+    %.* exp(sqrt(V(t, :) * dt) .* Zs ... 
+    %                        + (r - q - V(t, :) / 2) * dt)  ;
+
     V(t + 1, : ) = V(t, :) + kappa * (theta - V(t, :)) * dt ...
-        + nu * sqrt(V(t, :) * dt) .* Zv;
-
-    V(t + 1, :) = max(V(t + 1, :), 0);
+                            + eta * sqrt(V(t, :) * dt) .* Zv;
+    V(t + 1, :) = max(V(t + 1, :), 0);    %variance can't become negative
 end
-
-toc()
