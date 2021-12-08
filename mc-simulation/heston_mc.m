@@ -1,21 +1,25 @@
 function [S, V] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, N)
-% Similar to the lecture slides (quantitative finance)
-%
-%  Usage:      [S, V] = classic_heston_full_mc(..);
-%               
-%  Inputs:      S0      Intial price
-%               v0      Initial volatility
-%               rho     correlation between S and V
-%               kappa   mean-reversion speed of V
-%               theta   mean of V
-%               T       time to maturity
-%               r       riskfree interest rate
-%               q       riskfree interest rate
-%               eta      .. 
-%               npath  number of paths to be simulated
-%               N      number of steps 
-%  Output:      S      N x npath matrix of simulated prices
-%               V      N x npath matrix of simulated volatilities
+%{
+ Description: MC simulation of the Heston model using an euler scheme
+              
+ Inputs:      S0      Intial price
+              v0      Initial volatility              
+
+              rho     correlation between S and V
+              kappa   mean-reversion speed of V
+              theta   mean of V
+              T       time to maturity
+              r       riskfree interest rate
+              q       divident yield
+              eta     volatility of volatility
+              H       roughness parameter
+              npath   number of paths to be simulated
+              N       number of steps 
+ Output:      S       N x npath matrix of simulated prices
+              V       N x npath matrix of simulated volatilities
+ References:
+
+%}
 
 dt = T/N;                               %Time delta
 S = S0 * ones(N + 1, npath);            %Matrix to store stock results
@@ -29,9 +33,6 @@ for t = 1:N
     S(t + 1, :) = S(t, :) + (r - q) * S(t, :) * dt + ... 
                                 sqrt(V(t, :) * dt) .* S(t, :) .* Zs;
     
-    
-    %.* exp(sqrt(V(t, :) * dt) .* Zs ... 
-    %                        + (r - q - V(t, :) / 2) * dt)  ;
 
     V(t + 1, : ) = V(t, :) + kappa * (theta - V(t, :)) * dt ...
                             + eta * sqrt(V(t, :) * dt) .* Zv;

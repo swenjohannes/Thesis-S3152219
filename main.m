@@ -13,6 +13,7 @@ N = 300;
 
 %MC simulation
 [S_c, V_c] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, steps);
+[S_r, V_r] = rough_heston_mc(S0, v0, rho, kappa, theta, T, eta, H, npath, steps);
 
 N_obs = 5;
 cos2d_hest(S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N, N_obs)
