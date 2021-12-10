@@ -35,6 +35,16 @@ W = zeros(N, npath);  %To keep track of W
 
 K = @(t) 1 / gamma(H) * t ^ (H - 1 / 2);
 
+
+t_obs = (1:N) * dt;
+K = 1 / gamma(H) * t_obs .^ (H - 1 / 2);
+
+flip(K) %Reverse the order
+
+K* kappa * (theta - V(1:m, :)) * dt  ...
++    K * eta * sqrt(V(m, :)) .* W(m, :);
+
+
 for k = 2:(N + 1)
     z = randn(2, npath / 2);
     z = [z, -z]; %antithetic samplic

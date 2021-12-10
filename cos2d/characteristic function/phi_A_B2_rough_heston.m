@@ -1,4 +1,4 @@
-function [phi_A, B2] = phi_A_B2(w1, w2, kappa, rho, eta, theta, r, q, tau, a1, b1, a2, b2)
+function [phi_A, B2] = phi_A_B2_rough_heston(u1, u2, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, T, N)
 %{
 Description: Calculates the A part of the heston characteristic function.
 
@@ -25,19 +25,27 @@ References:
 
 %}
 
-w1 = w1' * pi / (b1 - a1);  %Turn w1 in w1* and make a column vector
-w2 = w2  * pi / (b2 - a2);
+pbma1 = pi / (b1 - a1);
+pbma2 = pi / (b2 - a2);
+u1 = u1' * pbma1; %make transpose!
+dt = T / N;
+M = length(u1); 
 
-eta2 = eta ^ 2; %Notation!
-beta = kappa - 1i * rho * eta * w1; 
-D = sqrt(beta .^ 2 + eta2 * w1 .* (1i + w1));
+% Define the Volterra integral equation:
+c1 = - 0.5 *(u1 .^2 + 1i * u1);
+beta = kappa - 1i * rho * eta * u1; 
+c3 = 0.5*eta ^ 2;
+f = @(w) (c1 - beta .*w + c3*w.^2);
 
-h = (beta - D - 1i * w2 * eta2) ./ (beta + D - 1i * w2 * eta2);
-hemdt = h  .* exp (-D * tau); %To ease up calculations
-
-B2 = (beta - D - (beta + D) .* hemdt) ./ (eta2 * (1 - hemdt)); %Get B2
-
-phi_A = exp(1i * w1 * (r - q) * tau + ...  %Compute phi A
-    kappa * theta / eta2 * ((beta - D) * tau - 2 * log((hemdt - 1) ./ (h - 1))));
-
+[B2, phi_A] = deal(zeros([M, M]));
+for j = u2
+    [psi,Dalpha_psi] = SolveVIE(f, 1i * j * pbma2, alpha,T, N, M); %solve VIE
+ 
+    % Integrate to get the characteristic function
+    B2(:, abs(j) + 1) = sum((Dalpha_psi(:, 1:end-1) + Dalpha_psi(:,2:end))/2, 2) *dt ...
+                        + 1i * j * pbma2; %Don't know why this needs to be added.
+    phi_A(:, abs(j) + 1) = exp(1i * u1 * (r - q) * T + ...
+                    kappa * theta * sum((psi(:, 1:end-1) + psi(:, 2:end))/2, 2) *dt);
 end
+end
+
