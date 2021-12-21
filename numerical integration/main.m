@@ -1,9 +1,9 @@
 %params
 S0 = 100;
 K = 80;
-sigma = 0.04;
+sigma = 0.1;
 T = 1;
-r = 0.00;
+r = 0.05;
 a = 1.5;
 k = log(K);
 s0 = log(S0);
@@ -19,10 +19,10 @@ ctk(870)
 exp(ku(870))
 
 %% Heston 
-theta = 0.04;
-kappa = 1.5;
-nu = 0.7;
-rho = -0.7;
+theta = 0.1;
+kappa = 5;
+nu = 0.1;
+rho = 0.5;
 ch_fun = @(w) chfun_heston( r, kappa, theta, sigma , nu, rho, T, w, s0);
 psi = @(v) Psi(v, ch_fun, r, T, a);
 

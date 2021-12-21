@@ -1,5 +1,4 @@
-function H = get_H(kappa, rho, eta, dt, alpha, a, b, N)
-
+function H = get_H(alpha, B, a2, b2, N)
 %{
     Description: Computes a matrix containing all H(k2, j2, j1) values. 
     
@@ -19,22 +18,11 @@ function H = get_H(kappa, rho, eta, dt, alpha, a, b, N)
     References:
       - Moir 4.31 
 %}
-
-    bma = b - a;  
-    pbma = pi / bma;  
+    pbma = pi / (b2 - a2);  
+    k = 0:(N-1);           %To compute values in vector form
     
-    k2 = 0:(N-1);           %Compute K2 values in vector vorm
-    H(:,:, N) = zeros(N);   %empty matrice
-    for j1 = 0:(N-1)
-        for j2 = 0:(N-1)                        %Compute B2                        
-                B = B2(j1 * pbma, alpha * j2 * pbma, kappa, rho, eta, dt);
-                %Compute Moir 4.32, chi_H returns a vector over all k2's
-                H(:, j2 + 1, j1 + 1) =  2 / bma * exp(alpha * 1i * j2 * -a *pbma) ...
-                                     .* chi_H(a, b, B, k2, a, b);
-        end
-    end
+    H = 2 / (b2 - a2) * exp(alpha * 1i * k * -a2 *pbma) ...
+            .* chi_H(a2, b2, B, a2, b2, N);
 end           
-
-
 
 
