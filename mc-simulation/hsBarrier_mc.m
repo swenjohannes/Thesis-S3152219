@@ -53,6 +53,7 @@ for i = 1:nstep
 end
 S = exp(Y);
 ST = S(:,end);
+Fmc = mean(ST)
 
 price = zeros(size(K));
 for i = 1:length(K)

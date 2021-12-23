@@ -16,6 +16,7 @@ Nobs = 2;
 tic()
 [S_c, V_c] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, steps);
 prices = barrier_prices_dm(S_c, K, L, Nobs, "uo", 1, r, T)
+Fmc = mean(S_c(end,:))
 toc()
 
 tic()

@@ -35,7 +35,7 @@ K = 1 / gamma(H) * t_obs .^ (H - 1 / 2);    %Calculate kernel values
 for k = 2:(N + 1)
     z = randn(2, npath / 2);
     z = [z, -z];                            %antithetic samplic
-    Z = L * z;                              %correlation coefficient
+    Z = L' * z;                              %correlation coefficient
 
     m = k - 1; 
     dY = (r - q - 0.5 * V(k - 1, :)) * dt + sqrt(V(k - 1, :)) .* Z(1, :) * sqrt(dt);

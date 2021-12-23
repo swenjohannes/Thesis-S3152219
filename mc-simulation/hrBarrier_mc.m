@@ -49,7 +49,7 @@ for i = 1:nstep
   M(:,i) = sqrt(V(:,i)).*Z(:,2)*sqrt(dt)*eta;
   Kts = flipud(Kt(1:i));
   dV = ((theta - V(:,1:i)) *(kappa*dt) + M(:,1:i)) * Kts;
-  V(:,i+1) = max(V(:,i) + dV,0);
+  V(:,i+1) = max(V(:,1) + dV,0);
   
   if any(Nobs == i+1)
     I = I & (Y(:,i+1) < logB);
@@ -57,7 +57,7 @@ for i = 1:nstep
 end
 S = exp(Y);
 ST = S(:,end);
-mean(ST)
+Fmc = mean(ST)
 
 price = zeros(size(K));
 for i = 1:length(K)
