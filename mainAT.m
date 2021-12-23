@@ -7,24 +7,44 @@ addpath(genpath(folder));              %load functions!
 parameter_set1 %Load parameter set
 
 %Additional parameters
-npath = 1e5; 
-steps = 1200;
+npath = 2e4; 
+steps = 200;
 N = 100;
+Nobs = 2;
 
 %% MC simulation
-tic
+tic()
 [S_c, V_c] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, steps);
-prices = barrier_prices_dm(S_c, K, L, Nobs, "uo", 1, r, T);
-disp(toc)
+prices = barrier_prices_dm(S_c, K, L, Nobs, "uo", 1, r, T)
+toc()
+
+tic()
+nobs = Nobs;
+nstep = steps;
+price = hsBarrier_mc(K,L,1,1,1,T,nobs, S0,r,q,v0,kappa,theta,eta,rho, npath,nstep)
+toc()
+
+H=1/2;
+
+tic()
+nobs = Nobs;
+nstep = steps;
+price = hrBarrier_mc(K,L,1,1,1,T,nobs, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep)
+F = S0*exp((r-q)*T)
+toc()
+
+
+tic()
+[S_r, V_r] = rough_heston_mc2(S0, v0, rho, kappa, theta, T, r, q, eta, H, npath, nstep);
+prices = barrier_prices_dm(S_r, K, L, Nobs, "uo", 1, r, T)
+mean(S_r(end,:))
+toc()
+
+
+
+
 
 if 0
-
-[S_r, V_r] = rough_heston_mc2(S0, v0, rho, kappa, theta, T, r, q, eta, H, npath, steps);
-
-
-
-
-barrier_prices_dm(S_r, K, L, Nobs, "uo", 1, r, T)
 %vanilla_prices(S_c, 80, 1, r, T)
 
 Nobs = 2;

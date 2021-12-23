@@ -38,7 +38,7 @@ for k = 2:(N + 1)
     Z = L * z;                              %correlation coefficient
 
     m = k - 1; 
-    dY = (r - q - 1 / 2 * V(k - 1, :)) * dt + sqrt(V(k - 1, :)) .* Z(1, :) * sqrt(dt);
+    dY = (r - q - 0.5 * V(k - 1, :)) * dt + sqrt(V(k - 1, :)) .* Z(1, :) * sqrt(dt);
     Y(k, :) = Y(k - 1, :) + dY;    %Update Y
     
     W(m, :) = sqrt(V(m, :) * dt) .* Z(2, :); %store the variance error process!
