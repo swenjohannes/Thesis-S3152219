@@ -1,4 +1,4 @@
-function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
+function [y,Dalpha_y,t] = SolveVIE(f,alpha,T,N,M)
 % Description: Solves the Volterra integral equation (VIE)
 %              
 %               y(t) = (1/gamma(alpha))*int_0^t(t-u)^(alpha - 1)f(u,y(u))du
@@ -15,13 +15,13 @@ function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
 %               The notation is the same as used in (Diethelm, 2004).
 % 
 % Parameters:
-%   f:      [function] Function of two variables from the VIE. We allow it 
+%   f:      [function] Function of 1 variable from the VIE. We allow it 
 %           to return a [Mx1] vector but then it should also accept [Mx1]
 %           vectors for its second argument.
 %   alpha:  [1x1 real] Number between 0 and 1.
 %   T:      [1x1 real] Upper time point to solve VIE on.
 %   N:      [1x1 integer] Number steps to discretize [0,T] into.
-%   M:      [1x1 integer] u1 dimension!
+%   M:      [1x1 integer, optional] Output dimension of f (for speed).
 %
 % Output: 
 %   y:        [Mx(N+1) real] Solution of VIE, 
@@ -35,12 +35,15 @@ function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
 %   analysis for a fractional ADAMs method, Numerical Algorithms 36:31-52,
 %   2004.
 %
-    %M = 10; y0 = i * 3;
+    
+    if ~exist('M','var') || isempty(M)
+        M = size(f(0),1);
+    end
     
     % Initialization:
     h = T / N;
     t = (0:h:T);
-    [y,Dalpha_y] = deal(NaN(M, N+1));
+    [y,Dalpha_y] = deal(NaN(M,N+1));
     
     % Define coefficient functions:
     dummy1 = ( (h^alpha) / (alpha*(alpha + 1)) );
@@ -50,31 +53,34 @@ function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
     a_kp1_kp1 = dummy1;
     b_j_kp1 = @(j,k) (  ((h^alpha)/alpha) * ( (k+1-j).^(alpha) ...
                                             - (k-j).^(alpha)  ) );
+    
     % Run scheme:
-    y(:,1) = y0;
-    Dalpha_y(:,1) = f(y0);
+    y(:,1) = 0;
+    Dalpha_y(:,1) = f(0);
     for k=0:N-1
         js = (0:1:k); 
         
         % Compute predictor:
-        yp = y0 + sum(b_j_kp1(js,k).*Dalpha_y(:,1:k+1),2)./gamma(alpha);
+        yp = sum(b_j_kp1(js,k).*Dalpha_y(:,1:k+1),2)./gamma(alpha);
         
         % Compute solution:
         if k==0
-            y(:,2) = y0 + (a_0_kp1(k)*Dalpha_y(:,1) ...
+            y(:,2) = (a_0_kp1(k)*Dalpha_y(:,1) ...
                       + a_kp1_kp1*f(yp))./gamma(alpha);
         else
-            y(:,k+2) = y0 + (a_0_kp1(k)*Dalpha_y(:,1) ...
+            y(:,k+2) = (a_0_kp1(k)*Dalpha_y(:,1) ...
                         + sum(Dalpha_y(:,2:k+1).*a_j_kp1(js(2:end),k),2)...
                         + a_kp1_kp1*f(yp))./gamma(alpha);
         end
-
+        
         % Compute fractional derivative:
         Dalpha_y(:,k+2) = f(y(:,k+2));
+        
     end
-
+    
     if any(any(isnan(y))) || any(any(isnan(Dalpha_y)))
         warning('SolveVIE: NaNs produced!');
     end
+    
 end
 

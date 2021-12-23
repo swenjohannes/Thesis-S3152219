@@ -1,6 +1,7 @@
-function [S, V, time] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, N)
+function [S, V, time] = rough_heston_mc4(S0, v0, rho, kappa, theta, T, r, q, eta, H, npath, N)
 %{
- Description: MC simulation of the Heston model using an euler scheme
+ Description: MC simulation of rough volatility using an euler scheme,
+              based on ..
               
  Inputs:      S0      Intial price
               v0      Initial volatility              
@@ -17,13 +18,24 @@ function [S, V, time] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath
               N       number of steps 
  Output:      S       N x npath matrix of simulated prices
               V       N x npath matrix of simulated volatilities
- References:
-
 %}
+
+% N = 10, npath = 6
+
 tic();
-dt = T/N;                               %Time delta
-S = S0 * ones(N + 1, npath);            %Matrix to store stock results
-V = v0 * ones(N + 1, npath);            %Matrix to store variance results
+alpha = H + 1/2;
+dt = T/N;                       %Time steps
+S = NaN(N + 1, npath);          %Matrix to store stock results
+V = NaN(N + 1, npath);          %Matrix to store variance results
+
+S(1, :) = S0;
+V(1, :) = v0;
+
+W = NaN(N, npath);                        %To keep track of W
+
+t_obs = (1:N) * dt;                             %make column vector
+K = 1 / gamma(alpha) * t_obs .^ (alpha - 1);    %Calculate kernel values
+K = flip(K);
 
 for t = 1:N
     z =  randn(1, npath/2);                             %antithetic sampling
@@ -32,11 +44,13 @@ for t = 1:N
 
     S(t + 1, :) = S(t, :) + (r - q) * S(t, :) * dt + ... 
                                 sqrt(V(t, :) * dt) .* S(t, :) .* Zs;
-    
 
-    V(t + 1, : ) = V(t, :) + kappa * (theta - V(t, :)) * dt ...
-                            + eta * sqrt(V(t, :) * dt) .* Zv;
-    V(t + 1, :) = max(V(t + 1, :), 0);    %variance can't become negative
+    W(t, :) = sqrt(V(t, :) * dt) .* Zv; %store the variance error process!
+    
+    V(t + 1, : ) = max(v0 ...
+                        + K(end - t +1:end) * kappa * (theta - V(1:t, :)) * dt ...
+                        + K(end - t +1:end) * eta * W(1:t, :), 0);
 end
-fprintf('Heston MC: ')   
+
+fprintf('Rough Heston MC: ')   
 time = toc()

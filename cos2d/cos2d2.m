@@ -60,8 +60,8 @@ if model == "h"
     [phi_Am, B2m]  = phi_A_B2_heston(k, -k, kappa, rho, eta, theta, r, q, dt, a1, b1, a2, b2);
 elseif model == "rh"
     alpha = H + 0.5;  
-    [phi_Ap, B2p]  = phi_A_B2_rough_heston(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, dt, N_int);
-    [phi_Am, B2m]  = phi_A_B2_rough_heston(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, dt, N_int);
+    [phi_Ap, B2p]  = phi_A_B2_rough_heston2(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, dt, N_int);
+    [phi_Am, B2m]  = phi_A_B2_rough_heston2(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, dt, N_int);
 else error('Please supply a correct model. Options are "h" or "rh". ')   %Succesful!
 end
 
