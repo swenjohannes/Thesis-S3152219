@@ -11,4 +11,4 @@ theta = 0.1;                        %Long-run mean of volatility
 kappa = 5;                          %Mean reversion speed
 T = 1;                              %Time to maturity   
 H = 0.1;                            %Roughness parameter
-fprintf('Loaded parameter set 1')   %Succesful!
+disp('Loaded parameter set 1')   %Succesful!
