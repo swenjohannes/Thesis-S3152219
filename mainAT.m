@@ -4,7 +4,7 @@ close all
 folder = fileparts(which(mfilename)); 
 addpath(genpath(folder));              %load functions!
 
-parameter_set1 %Load parameter set
+parameter_set2 %Load parameter set
 
 %Additional parameters
 npath = 2e4; 
