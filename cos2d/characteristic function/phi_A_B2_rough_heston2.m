@@ -1,4 +1,4 @@
-function [phi_A, B2] = phi_A_B2_rough_heston(u1, u2, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, T, N)
+function [phi_A, B2] = phi_A_B2_rough_heston2(u1, u2, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, T, N)
 %{
 Description: Calculates the A part of the heston characteristic function.
 
@@ -25,7 +25,7 @@ References:
 
 %}
 
-%u1 = 1:10; u2 =1:3; alpha = 0.6;
+%u1 = 1:10; u2 =1:10; alpha = 1; N = 160;
 
 pbma1 = pi / (b1 - a1);
 pbma2 = pi / (b2 - a2);
@@ -33,28 +33,33 @@ u1 = u1' * pbma1; %make transpose!
 dt = T / N;
 M = length(u1); 
 
-% Define the Volterra integral equation:
+% To define the Volterra integral equation:
 c1 = - 0.5 *(u1 .^2 + 1i * u1);
 beta = kappa - 1i * rho * eta * u1; 
 c3 = 0.5*eta ^ 2;
-f = @(w) (c1 - beta .*w + c3*w.^2);
 
 [B2, phi_A] = deal(zeros([M, M]));
 for j = u2
-    [psi,Dalpha_psi] = SolveVIE(f, 1i * j * pbma2, alpha,T, N, M); %solve VIE
+    j = 5;
+    g = @(t) 1i * j * pbma2 * t.^-alpha / gamma(1-alpha);
+    f = @(w) (c1 - beta .*w + c3*w.^2);
+    [psi, Dalpha_psi, Dalpha_psi2] = SolveVIE2(f, g,  1i * j * pbma2, alpha,T, N, M); %solve VIE
 %     close all;
-%     figure; 
-%     subplot(1,2,1); surf(real(psi)); title('Real part');
-%     subplot(1,2,2); surf(imag(psi)); title('Imag part');
-%     figure; 
-%     subplot(1,2,1); surf(real(Dalpha_psi)); title('Real part'); 
-%     subplot(1,2,2); surf(imag(Dalpha_psi));title('Imag part');
-%         
+    plot_imag(Dalpha_psi)
+    plot_imag(Dalpha_psi2)
     % Integrate to get the characteristic function
-    B2(:, abs(j) + 1) = sum((Dalpha_psi(:, 1:end-1) + Dalpha_psi(:,2:end))/2, 2) *dt  ...
-                         + 1i * j * pbma2 / gamma(alpha); %Don't know why this needs to be added.
+%       B2(:, abs(j) + 1) = sum((Dalpha_psi(:, 1:end-1) + Dalpha_psi(:,2:end))/2, 2) *dt  ...
+%                              + 1i * j * pbma2; %Don't know why this needs to be added.
+
+    Dalpha_psi2(:, 1)
+    B2(:, abs(j) + 1) = sum((Dalpha_psi2(:, 1:end-1) + Dalpha_psi2(:,2:end))/2, 2) *dt ...
+                         + 1i * j * pbma2; %Don't know why this needs to be added.
+
     phi_A(:, abs(j) + 1) = exp(1i * u1 * (r - q) * T + ...
                     kappa * theta * sum((psi(:, 1:end-1) + psi(:, 2:end))/2, 2) *dt);
 end
 end
-
+% 
+% alpha = 0.6
+% 0.9 ^(1 - alpha) 
+% 1 - (0.5 / 12) ^-alpha / gamma(1 - alpha)

@@ -1,4 +1,4 @@
-function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
+function [y,Dalpha_y, Dalpha_y2, t] = SolveVIE2(f, g,  y0, alpha, T, N, M)
 % Description: Solves the Volterra integral equation (VIE)
 %              
 %               y(t) = (1/gamma(alpha))*int_0^t(t-u)^(alpha - 1)f(u,y(u))du
@@ -35,8 +35,6 @@ function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
 %   analysis for a fractional ADAMs method, Numerical Algorithms 36:31-52,
 %   2004.
 %
-    %M = 10; y0 = i * 3;
-    
     % Initialization:
     h = T / N;
     t = (0:h:T);
@@ -44,15 +42,18 @@ function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
     
     % Define coefficient functions:
     dummy1 = ( (h^alpha) / (alpha*(alpha + 1)) );
+
     a_0_kp1 = @(k)( dummy1 *( k.^(alpha+1)-(k - alpha).*((k+1).^(alpha))));
     a_j_kp1 = @(j,k)( dummy1*( (k-j+2).^(alpha+1) ...
                       + (k-j).^(alpha+1) - 2*(k-j+1).^(alpha+1) ) );
     a_kp1_kp1 = dummy1;
     b_j_kp1 = @(j,k) (  ((h^alpha)/alpha) * ( (k+1-j).^(alpha) ...
                                             - (k-j).^(alpha)  ) );
+    
     % Run scheme:
     y(:,1) = y0;
     Dalpha_y(:,1) = f(y0);
+    Dalpha_y2(:, 1) = f(y0);
     for k=0:N-1
         js = (0:1:k); 
         
@@ -62,19 +63,20 @@ function [y,Dalpha_y,t] = SolveVIE(f, y0, alpha, T, N, M)
         % Compute solution:
         if k==0
             y(:,2) = y0 + (a_0_kp1(k)*Dalpha_y(:,1) ...
-                      + a_kp1_kp1*f(yp))./gamma(alpha);
+                      + a_kp1_kp1* (f(yp) -g(t(k+2))))./gamma(alpha);
         else
             y(:,k+2) = y0 + (a_0_kp1(k)*Dalpha_y(:,1) ...
                         + sum(Dalpha_y(:,2:k+1).*a_j_kp1(js(2:end),k),2)...
-                        + a_kp1_kp1*f(yp))./gamma(alpha);
+                        + a_kp1_kp1* (f(yp) -g(t(k+2))))./gamma(alpha);
         end
 
         % Compute fractional derivative:
-        Dalpha_y(:,k+2) = f(y(:,k+2));
+        Dalpha_y(:,k+2) = f(y(:,k+2)) -g(t(k+2));
+        Dalpha_y2(:, k+2) = f(y(:, k+2));
     end
 
     if any(any(isnan(y))) || any(any(isnan(Dalpha_y)))
-        warning('SolveVIE: NaNs produced!');
+        warning('SolveVIE: NaNs produced!')
     end
 end
 
