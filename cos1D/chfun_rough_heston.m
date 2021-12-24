@@ -8,7 +8,7 @@ function phi = chfun_rough_heston(r, q, kappa, theta, v0, eta, rho, T, w, H, N)
     c3 = 0.5*eta ^ 2;
     f = @(y) (c1 - beta .*y + c3*y.^2);
 
-    [psi,Dalpha_psi] = SolveVIE(f, alpha,T, N); %solve VIE
+    [psi,Dalpha_psi] = SolveVIE(f, alpha,T, N); %solve VIE SolveVIE(f, y0, alpha, T, N, M)
 
     dt = T / N;
     phi = exp( 1i * w * (r - q) * T ...

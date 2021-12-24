@@ -127,4 +127,4 @@ end
 legend(cellstr(num2str(T', 'T = %-2.2f')),'location','best')
 
 
-(strike_cos_res - strike_sim_res)/ 
+%(strike_cos_res - strike_sim_res)/ 
