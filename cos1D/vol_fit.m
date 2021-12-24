@@ -12,6 +12,11 @@ vol_dat = csvread(filename, 1, 1) / 10;
 S0 = 1.1325; %Spot
 K = [10.949,10.992,11.034,11.077,11.119,11.162,11.204,11.246,11.289,11.331,11.374,11.416,11.459,11.501,11.544,11.586,11.628] / 10;
 T = [1/52, 2/52, 1/12, 2/12, 3/12, 6/12, 9/12, 1, 2, 3, 5, 7, 10];
+close all
+figure;
+[X, Y] = meshgrid(K, T);
+surf(X, Y, vol_dat);
+
 
 %vol_dat = vol_dat(5:13, :)
 %T = T(5:13)
@@ -72,26 +77,54 @@ surf(iv)
 
  blsimpv(4722.35,4075,-0.02,32/250,650.15)
 
-
- K = [0.9:0.02:1.3]
- T = [1/52, 2/52, 1/12, 2/12, 3/12, 6/12, 9/12, 1, 2]
+S0 = 1;
+K = [0.8:0.02:1.2];
+T = [1/12, 2/12, 3/12, 6/12, 9/12];
 %% Vol surface compare
-v0 = 0.4;
-theta = 0.4;
-r = 0.05;
+v0 = 0.04;
+theta = 0.04;
+r = 0.01;
 q = 0.0;
-kappa = 1;
-rho  = -0.4;
-eta = 0.5;
-N =200;
+kappa = 1.5;
+rho  = -0.7;
+eta = 0.3;
+N = 100;
 H = 0.1;
 
 iv_h = get_iv_surf("h", S0, v0, K, r, q, T, eta, theta, rho, kappa, N);
-iv_rh = get_iv_surf("rh", S0, v0, K, r, q, T, eta, theta, rho, kappa, N, H);
+iv_rh = get_iv_surf("rh", S0, v0, K, r, q, T, eta, theta, rho, kappa, 300, H);
 
+%% Surface plot
 close all
 figure;
 [X, Y] = meshgrid(K, T);
-surf(X, Y, iv_h); hold on
-surf(X, Y, iv_rh);
-%surf(X, Y, vol_dat)
+surf(X, Y, iv_h, 'FaceColor','g', 'FaceAlpha',0.4, 'EdgeAlpha', 0.4); hold on
+surf(X, Y, iv_rh, 'FaceColor','r', 'FaceAlpha',0.4, 'EdgeAlpha', 0.4);
+xlabel('Strike')
+ylabel('Time to maturity')
+zlabel('Implied volatility')
+
+%% Smiles
+
+%Heston
+figure; hold on;
+xlabel('Strike')
+ylabel('Implied volatility')
+title('Heston skews')
+for t = 1:length(T)
+    plot(K, iv_h(t, :))
+end
+legend(cellstr(num2str(T', 'T = %-2.2f')),'location','best')
+
+%Rough Heston
+figure; hold on;
+xlabel('Strike')
+ylabel('Implied volatility')
+title('Rough Heston skews')
+for t = 1:length(T)
+    plot(K, iv_rh(t, :))
+end
+legend(cellstr(num2str(T', 'T = %-2.2f')),'location','best')
+
+
+(strike_cos_res - strike_sim_res)/ 
