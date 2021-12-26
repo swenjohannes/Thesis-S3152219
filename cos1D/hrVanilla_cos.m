@@ -7,6 +7,7 @@ pc = 1;
 
 x = log(S0 ./ K);
 N = 256;
+H = 0.1;
 
 %Obtain truncation ranges from cumulants
 [c1, c2, ~]  = heston_cumulants_v1(r, q, kappa, theta, v0, eta, rho, T);

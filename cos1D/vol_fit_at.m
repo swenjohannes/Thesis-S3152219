@@ -15,7 +15,8 @@ ylabel('Maturity')
 zlabel('Volatility')
 
 % Data
-S0 = 1.1325; %Spot
+%S0 = 1.1325; %Spot
+S0 = 1.1225; %Spot
 r = 0;
 q = 0;
 v0 = 0.06^2;
@@ -29,6 +30,7 @@ X = zeros(length(T),5);
 
 for j = 1:length(T)
     Tc = T(j);
+    disp(Tc)
     vol = vol_dat(j,:);
     err_func = @(x) sum(sum((vol - get_iv(K,pc,Tc, S0,r,q,x)).^2));
 
@@ -39,7 +41,8 @@ for j = 1:length(T)
     Aeq = [];
     beq = [];
     %get_iv(K,pc,Tc, S0,r,q,x0)
-    x_opt = fmincon(err_func,x0,A,b,Aeq,beq,lb,ub);
+    options=optimset('Display','off');
+    x_opt = fmincon(err_func,x0,A,b,Aeq,beq,lb,ub,[],options);
     X(j,:) = x_opt;
 end
 
@@ -67,7 +70,8 @@ b = [];
 Aeq = [];
 beq = [];
 %get_iv(K,pc,Tc, S0,r,q,x0)
-x_opt = fmincon(err_func,x0,A,b,Aeq,beq,lb,ub);
+options = optimset('Display','off');
+x_opt = fmincon(err_func,x0,A,b,Aeq,beq,lb,ub,[],options);
 
 %% 
 figure(3)

@@ -5,8 +5,9 @@ function price = hsVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho)
 % pc = -1;
 % %
 
+S0 = S0(:)';
+K = K(:)';
 x = log(S0 ./ K);
-x = x(:)';
 N = 256;
 
 [c1, c2, ~]  = heston_cumulants_v1(r, q, kappa, theta, v0, eta, rho, T);
@@ -24,12 +25,12 @@ if pc >= 0 % call
 else % put
     Uk = 2 / (b - a) *(-chi(w, a, 0, a, b) + psi(w, a, 0, a, b));
 end
-%F = Uk' * (phi .* exp(1i * w * (x - a)));
-F = (phi .* Uk) .* exp(1i * w * (x - a));
-%F(1, :) = 0.5 * F(1, :); %weight first term by a half
 
-price = K * exp(-r * T) .* real(sum(F, 1));
-%price = K * exp(-r * T) .* real(F);
+% F = (phi .* Uk) .* exp(1i * w * (x - a));
+% price = K * exp(-r * T) .* real(sum(F, 1));
+
+F = (phi .* Uk).' * exp(1i * w * (x - a));
+price = K * exp(-r * T) .* real(F);
 
 price(price<0) = 0;
 end
