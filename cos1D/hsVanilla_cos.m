@@ -1,4 +1,4 @@
-function price = hsVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho)
+function price = hsVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho,nstep)
 
 % % Test param
 % parameter_set2

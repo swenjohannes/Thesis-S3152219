@@ -1,9 +1,9 @@
 % Test param
-parameter_set2
+parameter_set2_at
 pc = 1;
-nstep = 200;
+nstep = 256;
 npath = 1e4;
-K = (80:10:100);
+K = (50:10:150);
 %
 
 %% Heston
@@ -22,9 +22,12 @@ toc()
 disp('Rough Heston')
 
 tic
-%Vmc = hrVanilla_mc(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep)
+for i = 1:1
+    Vcos = hrVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho,H, 128)
+end
 toc()
 
 tic
-%Vmc = hrVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho,H)
+Vmc = hrVanilla_mc(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep)
 toc()
+
