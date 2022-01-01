@@ -5,10 +5,10 @@ function price = hrVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho,H,nstep)
 % pc = 1;
 % %
 
-if (~ exist ( 'nstep' , 'var' )), nstep = 256; end 
+if (~ exist ( 'nstep' , 'var' )), nstep = 128; end 
 
 x = log(S0 ./ K);
-N = nstep/2;
+N = nstep;
 %H = 0.1;
 
 %Obtain truncation ranges from cumulants
@@ -17,7 +17,7 @@ N = nstep/2;
 w = pi/(b-a)*(0:(N-1))';
 
 %phi = chfun_rough_heston(r, q, kappa, theta, v0, eta, rho, T, w, H, nstep);
-phi = cfRoughHeston(w,r-q,v0,kappa,theta,eta,rho,H,T);
+phi = cfRoughHeston2(w,r-q,v0,kappa,theta,eta,rho,H,T);
 phi(1, :) = 0.5 * phi(1, :); %weight first term by a half
 
 %Uk = 2 / (b - a) *(chi_coef(k, 0, b, a, b) - psi_coef(k, 0, b, a, b));
