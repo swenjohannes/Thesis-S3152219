@@ -1,4 +1,4 @@
-function phi = cfRoughHeston2(w,r,v0,kappa,theta,eta,rho,H,T,nstep,X)
+function [phi,B2] = cfRoughHeston2(w,r,v0,kappa,theta,eta,rho,H,T,nstep,X)
 % clear all
 % 
 % w = (0:12)'/12*pi;
@@ -37,7 +37,7 @@ for k = 2:nstep+1
     
     A = ak * 0.5 * eta^2;
     B = ak * (1i*rho*eta * w - kappa) - 1;
-    C = Dh(:,1:k-1) * a' - 0.5 * ak * f1;
+    C = Dh(:,1:k-1) * a' - ak * f1;
     D = (B.^2 - 4*A.*C) ./ A.^2 /4;
     
     nn = 1;
@@ -45,6 +45,7 @@ for k = 2:nstep+1
     Dh(:,k) = func(h(:,k));
 end
 
+B2 = sum((Dh(:, 1:end-1) + Dh(:,2:end))/2, 2) *dt;
 phi = exp( 1i * w * r * T ...
           + theta*kappa*sum((h(:, 1:end-1) + h(:,2:end))/2, 2) *dt ...
           + v0*sum((Dh(:, 1:end-1) + Dh(:,2:end))/2, 2) *dt ...

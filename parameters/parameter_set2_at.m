@@ -1,5 +1,7 @@
 %% Parameter set 2
 S0 = 1.1225;                           %Initial stock price
+K = (1.08:0.01:1.16);
+x0 = log(S0./K);
 r = 0.00;                           %Risk-free interest rate
 q = 0.00;                           %Divident yield
 v0 = 0.006628295295875;                           %Volatility
