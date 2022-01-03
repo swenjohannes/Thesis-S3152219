@@ -90,7 +90,7 @@ vanilla_prices(S_r, K, 1, r, T)
 
 %% Rough heston test
 %Truncation ranges
-parameter_set1
+parameter_set2
 T = 0.5;
 [c1, c2, ~]  = heston_cumulants_v1(r, q, kappa, theta, v0, eta, rho, T);
 [a1, b1] = cos_truncation_range_v2(c1,c2,0,12); %Obtain a and b from cumulants
@@ -101,24 +101,5 @@ dt = T/Nobs;
 k = 0:(N-1);        %Pre compute A and B2 parts of the characteristic equation!
 
 a2 = 0, b2 = 0.3;
-[phi_Ap, B2p]  = phi_A_B2_heston(k, k, kappa, rho, eta, theta, r, q, dt, a1, b1, a2, b2);
-[phi_Ap_r, B2p_r]  = phi_A_B2_rough_heston(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 1, dt, 160);
-[phi_Ap_r_1, B2p_r_1]  = phi_A_B2_rough_heston(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 0.6, dt, 160);
-[phi_Ap_r, B2p_r]  = phi_A_B2_rough_heston2(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 1, dt, 160);
-[phi_Ap_r, B2p_r]  = phi_A_B2_rough_heston2(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 0.99, dt, 160);
 
-(B2p - B2p_r) / (i * pi / (b2 -a2))
-
-
-B2m_r - B2m
-pi / (b2 -a2)
-
-[phi_Am, B2m]  = phi_A_B2_heston(k, -k, kappa, rho, eta, theta, r, q, dt, a1, b1, a2, b2);
-%[phi_Am_r, B2m_r]  = phi_A_B2_rough_heston(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 0.6, dt, 160);
-[phi_Am_r_1, B2m_r_1]  = phi_A_B2_rough_heston(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 0.6, dt, 160);
-[phi_Am_r, B2m_r]  = phi_A_B2_rough_heston2(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 1, dt, 300);
-[phi_Am_r, B2m_r]  = phi_A_B2_rough_heston2(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 0.6, dt, 160);
-%Note: We need to add + j * pbma2 to the equation.. no idea why
-1/ pi * (b2 - a2)
-
-B2p_r - B2p
+[phi_Ap, B2p]  = phi_A_B2_heston(k, k, kappa, rho, eta, theta, r, q, dt);

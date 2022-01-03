@@ -21,8 +21,7 @@ function [price, lower, upper, price_mean] = barrier_prices_dm(S, K, L, Nobs, ty
 
 npath = size(S, 2);
 T_idx = size(S,1);           %final step index
-
-t_obs = ((1:Nobs) * (T_idx - 1) / Nobs) + 1; %index of observation moment
+t_obs = round(((1:Nobs) * (T_idx - 1) / Nobs) + 1); %index of observation moment
 S = S(t_obs, :);    % filter observation moments
 
 %Indicator function

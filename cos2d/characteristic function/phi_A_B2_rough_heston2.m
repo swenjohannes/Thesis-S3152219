@@ -1,65 +1,56 @@
-function [phi_A, B2] = phi_A_B2_rough_heston2(u1, u2, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, T, N)
-%{
-Description: Calculates the A part of the heston characteristic function.
+function [phiA, B2] = phi_A_B2_rough_heston2(u1,u2, r,kappa,theta,eta,rho,H,T,nstep)
 
-Parameters:
-  w1:       [N x 1] vector of w1 values. Should not be w1*!
-  w2:       [M x 1] vector of w1 values. Should not be w1*!
-  kappa:    [1x1 real] Heston parameter
-  rho:      [1x1 real] Heston parameter
-  eta:      [1x1 real] Heston parameter
-  theta:    [1x1 real] Heston parameter
-  r:        [1x1 real] Heston parameter
-  q:        [1x1 real] Heston parameter
-  tau:      [1x1 real] Time delta between observations
-  a1, b1:   [1x1 real] Cosine arguments of log spot price
-  a2, b2:   [1x1 real] Cosine arguments of variance
-  N         [1x1 real] Truncation argument
+%u1 = (0:50)'*pi / (b1 - a1);
+%u2 = (0:50)'*pi / (b2 - a2);
+% v0 = 0.2^2;
+% kappa = 1.7;
+% theta = 0.22;
+% eta = 0.5;
+% rho = -0.7;  
+% H = 0.1;
+% T = 0.5;
+% nstep = 100;
+% r = 0.05;
 
-Output: 
-  phi_A:    [N x M] matrix containing all phi_A values for the input w1,
-             w2. Note the function does wj * pi/(bj -aj)!
-  B2:       [N x M] matrix containing all B2 values for the input w1,
-             w2. Note the function does wj * pi/(bj -aj)!
-References:
+if (~ exist ( 'nstep' , 'var' )), nstep = 30; end % TODO: the optimal nstep is still to be found
 
-%}
+alpha = H + 0.5;
+[phiA,B2] = deal(zeros(length(u1),length(u2)));
 
-%u1 = 1:10; u2 =1:10; alpha = 1; N = 160;
+f1 = 0.5*(u1.^2 + 1i*u1);
+func = @(x) -f1 + (1i*rho*eta * u1 - kappa) .* x + 0.5 * eta^2 * x.^2;
 
-pbma1 = pi / (b1 - a1);
-pbma2 = pi / (b2 - a2);
-u1 = u1' * pbma1; %make transpose!
-dt = T / N;
-M = length(u1); 
+tgrid = linspace(0,T,nstep+1);
+dt = tgrid(2)-tgrid(1);
 
-% To define the Volterra integral equation:
-c1 = - 0.5 *(u1 .^2 + 1i * u1);
-beta = kappa - 1i * rho * eta * u1; 
-c3 = 0.5*eta ^ 2;
+for m = 1:length(u2)
+    %m = 5;
+    %h = zeros(length(u1),nstep+1);
+    h = 1i*u2(m) * ones(length(u1),nstep+1);
+    Dh = zeros(length(u1),nstep+1);
 
-[B2, phi_A] = deal(zeros([M, M]));
-for j = u2
-    j = 5;
-    g = @(t) 1i * j * pbma2 * t.^-alpha / gamma(1-alpha);
-    f = @(w) (c1 - beta .*w + c3*w.^2);
-    [psi, Dalpha_psi, Dalpha_psi2] = SolveVIE2(f, g,  1i * j * pbma2, alpha,T, N, M); %solve VIE
-%     close all;
-    plot_imag(Dalpha_psi)
-    plot_imag(Dalpha_psi2)
-    % Integrate to get the characteristic function
-%       B2(:, abs(j) + 1) = sum((Dalpha_psi(:, 1:end-1) + Dalpha_psi(:,2:end))/2, 2) *dt  ...
-%                              + 1i * j * pbma2; %Don't know why this needs to be added.
+    Dh(:,1) = func(h(:,1));
 
-    Dalpha_psi2(:, 1)
-    B2(:, abs(j) + 1) = sum((Dalpha_psi2(:, 1:end-1) + Dalpha_psi2(:,2:end))/2, 2) *dt ...
-                         + 1i * j * pbma2; %Don't know why this needs to be added.
+    ak = dt^alpha / gamma(alpha + 2);
+    j = (1:nstep);
+    aa = ak * ((nstep+1 - j + 1).^(alpha+1) + (nstep+1 - j - 1).^(alpha+1) - 2*(nstep+1-j).^(alpha+1)); 
 
-    phi_A(:, abs(j) + 1) = exp(1i * u1 * (r - q) * T + ...
-                    kappa * theta * sum((psi(:, 1:end-1) + psi(:, 2:end))/2, 2) *dt);
+    for k = 2:nstep+1
+        a = aa(end-k+2:end);
+        a(1) = ak * ((k-2)^(alpha+1) - (k-2-alpha)*(k-1)^alpha);
+
+        A = ak * 0.5 * eta^2;
+        B = ak * (1i*rho*eta * u1 - kappa) - 1;
+        C = 1i * u2(m) * tgrid(k)^(alpha-1)/gamma(alpha) + Dh(:,1:k-1) * a' - ak * f1;
+        D = (B.^2 - 4*A.*C) ./ A.^2 /4;
+
+        nn = 1;
+        h(:,k) = -B./A/2 + sqrt(abs(D)).*exp(1i*angle(D)/2 + 1i * pi * nn); 
+        Dh(:,k) = func(h(:,k));
+    end
+    %plot_imag(h)
+    %plot_imag(Dh)
+    phiA(:,m) = exp(1i * r * T * u1 + theta*kappa * sum((h(:, 1:end-1) + h(:,2:end))/2, 2) *dt);
+    B2(:,m) = sum((Dh(:, 1:end-1) + Dh(:,2:end))/2, 2) *dt + 1i*u2(m);
 end
-end
-% 
-% alpha = 0.6
-% 0.9 ^(1 - alpha) 
-% 1 - (0.5 / 12) ^-alpha / gamma(1 - alpha)
+

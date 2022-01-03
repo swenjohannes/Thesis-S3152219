@@ -1,10 +1,10 @@
-function [phi_A, B2] = phi_A_B2_heston(w1, w2, kappa, rho, eta, theta, r, q, tau, a1, b1, a2, b2)
+function [phi_A, B2] = phi_A_B2_heston(w1, w2, kappa, rho, eta, theta, r, q, tau)
 %{
 Description: Calculates the A part of the heston characteristic function.
 
 Parameters:
-  w1:       [N x 1] vector of w1 values. Should not be w1*!
-  w2:       [M x 1] vector of w1 values. Should not be w1*!
+  w1:       [N x 1] vector of w1 values.
+  w2:       [M x 1] vector of w1 values.
   kappa:    [1x1 real] Heston parameter
   rho:      [1x1 real] Heston parameter
   eta:      [1x1 real] Heston parameter
@@ -12,8 +12,6 @@ Parameters:
   r:        [1x1 real] Heston parameter
   q:        [1x1 real] Heston parameter
   tau:      [1x1 real] Time delta between observations
-  a1, b1:   [1x1 real] Cosine arguments of log spot price
-  a2, b2:   [1x1 real] Cosine arguments of variance
   N         [1x1 real] Truncation argument
 
 Output: 
@@ -24,9 +22,6 @@ Output:
 References:
 
 %}
-
-w1 = w1' * pi / (b1 - a1);  %Turn w1 in w1* and make a column vector
-w2 = w2  * pi / (b2 - a2);
 
 eta2 = eta ^ 2; %Notation!
 beta = kappa - 1i * rho * eta * w1; 

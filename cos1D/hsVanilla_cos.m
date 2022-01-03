@@ -1,4 +1,4 @@
-function price = hsVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho,nstep)
+function price = hsVanilla_cos(K,pc,T, S0,r,q,v0,kappa,theta,eta,rho)
 
 % % Test param
 % parameter_set2
@@ -15,8 +15,8 @@ N = 256;
 w = pi/(b-a)*(0:(N-1))';
 
 %Obtain trucation ranges from cumulants
-%chfun_heston( r, kappa, theta, V0, nu, rho, T, w, x)
-phi = chfun_heston(r-q, kappa, theta, v0, eta, rho, T, w);
+phi = chfun_heston(v0, kappa, rho, eta, theta, r, q, T, w);
+%phi = chfun_heston(r-q, kappa, theta, v0, eta, rho, T, w);
 phi(1, :) = 0.5 * phi(1, :); %weight first term by a half
 
 %Uk = 2 / (b - a) *(chi_coef(k, 0, b, a, b) - psi_coef(k, 0, b, a, b));

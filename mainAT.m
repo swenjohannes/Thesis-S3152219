@@ -65,11 +65,11 @@ cos2d("rh", S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N, Nobs, 0.6)
 dt = T/Nobs;
 k = 0:(N-1);        %Pre compute A and B2 parts of the characteristic equation!
 
-[phi_Ap, B2p]  = phi_A_B2_heston(k, k, kappa, rho, eta, theta, r, q, dt, a1, b1, a2, b2);
-[phi_Am, B2m]  = phi_A_B2_heston(k, -k, kappa, rho, eta, theta, r, q, dt, a1, b1, a2, b2);
+[phi_Ap, B2p]  = phi_A_B2_heston(k, k, kappa, rho, eta, theta, r, q, dt);
+[phi_Am, B2m]  = phi_A_B2_heston(k, -k, kappa, rho, eta, theta, r, q, dt);
 
-[phi_Ap_r, B2p_r]  = phi_A_B2_rough_heston(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 1, dt, 500);
-[phi_Am_r, B2m_r]  = phi_A_B2_rough_heston(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, 1, dt, 500);
+[phi_Ap_r, B2p_r]  = phi_A_B2_rough_heston2(k, k, kappa, rho, eta, theta, r, q);
+[phi_Am_r, B2m_r]  = phi_A_B2_rough_heston2(k, -k, kappa, rho, eta, theta, r, q);
 
 %Note: We need to add + j * pbma2 to the equation.. no idea why
 end
