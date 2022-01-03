@@ -13,7 +13,7 @@ function [phi,A0,B1,B2] = cf2dRoughHeston(u1,u2, x0,v0, r,kappa,theta,eta,rho,H,
 % nstep = 10;
 % r = 0.05;
 
-if (~ exist ( 'nstep' , 'var' )), nstep = 30; end % TODO: the optimal nstep is still to be found
+if (~ exist ( 'nstep' , 'var' )), nstep = 50; end % TODO: the optimal nstep is still to be found
 
 alpha = H + 0.5;
 [phi,A0,B1,B2] = deal(zeros(length(u1),length(u2)));
