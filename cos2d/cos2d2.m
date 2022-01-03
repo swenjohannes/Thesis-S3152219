@@ -1,4 +1,4 @@
-function [V0, time] = cos2d(model, S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N, Nobs, H, a2, b2, N_int)
+function [V0, time] = cos2d2(model, S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N, Nobs, H, a2, b2, N_int)
 
 %{
     Description: Computes the barrier price under the Heston model, using
@@ -29,7 +29,8 @@ Output:
 
 %}
 tic();                                              %initial time
-if (~ exist ( 'N_int' , 'var' )), N_int = 160; end  %Default value
+
+if (~ exist ( 'N_int' , 'var' )), N_int = 30; end % TODO: the optimal nstep is still to be found
 
 %% Initialization
 x0 = log(S0 / K);                           %Log strike-spot
@@ -47,21 +48,22 @@ else
     b1 = L * sqrt(T);
 end
 
-
 if (~ exist ( 'a2' , 'var' ) && ~ exist ( 'b2' , 'var' ))
     [a2, b2] = a2_b2(eta, theta, kappa, T, v0, 1e-4); %select a2, b2 from chi-2 dist
 end
 
 %% Pre compute A and B2 parts of the characteristic equation!
-k = 0:(N-1);        
+w1 = (0:(N-1))' * pi / (b1 - a1);  %Turn w1 in w1* and make a column vector
+w2 = (0:(N-1)) * pi / (b2 - a2);
+
 if model == "h"
-    alpha = NaN; %Optional parameter
-    [phi_Ap, B2p]  = phi_A_B2_heston(k, k, kappa, rho, eta, theta, r, q, dt, a1, b1, a2, b2);
-    [phi_Am, B2m]  = phi_A_B2_heston(k, -k, kappa, rho, eta, theta, r, q, dt, a1, b1, a2, b2);
-elseif model == "rh"
-    alpha = H + 0.5;  
-    [phi_Ap, B2p]  = phi_A_B2_rough_heston2(k, k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, dt, N_int);
-    [phi_Am, B2m]  = phi_A_B2_rough_heston2(k, -k, kappa, rho, eta, theta, r, q, a1, b1, a2, b2, alpha, dt, N_int);
+    [phi_Ap, B2p]  = phi_A_B2_heston(w1, w2, kappa, rho, eta, theta, r, q, dt);
+    [phi_Am, B2m]  = phi_A_B2_heston(w1, -w2, kappa, rho, eta, theta, r, q, dt);
+elseif model == "rh" 
+    %[phi_Ap, B2p]  = phi_A_B2_rough_heston3(w1, w2, kappa, rho, eta, theta, r, q, H, T, N);
+    %[phi_Am, B2m]  = phi_A_B2_rough_heston3(w1, -w2, kappa, rho, eta, theta, r, q, H, T, N);
+    [phi_Ap, B2p]  = phi_A_B2_rough_heston2(w1,w2, r - q,kappa,theta,eta,rho,H,dt, N_int);
+    [phi_Am, B2m]  = phi_A_B2_rough_heston2(w1,-w2, r - q,kappa,theta,eta,rho,H,dt, N_int);
 else error('Please supply a correct model. Options are "h" or "rh". ')   %Succesful!
 end
 

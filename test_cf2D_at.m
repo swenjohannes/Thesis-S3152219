@@ -27,7 +27,7 @@ view([100 20])
 
 fprintf('Standard Heston Monte Carlo: \t')
 tic
-%phi_mc = cf2dHeston_mc(u1,u2, x0(1),v0, r-q,kappa,theta,eta,rho,T);
+phi_mc = cf2dHeston_mc(u1,u2, x0(1),v0, r-q,kappa,theta,eta,rho,T);
 toc()
 figure(2)
 surf(abs(phi_mc))

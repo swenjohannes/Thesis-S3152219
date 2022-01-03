@@ -110,6 +110,7 @@ ylabel('Time to maturity')
 zlabel('Difference in option price') 
 
 %% Create results table N/M
+clear all
 parameter_set2
 T = 0.5;
 %MC simulation of Heston model
@@ -117,7 +118,6 @@ npath = 1e5;
 steps = 1200;
 Nobs = [2:5, 8, 12];
 N = [60, 80, 100, 120];
-
 
 [S_c, V_c, time_c] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, steps);
 
@@ -130,7 +130,7 @@ for j = 1:length(Nobs)
     results_c(j, 2, 1) = price;
     results_c(j, 3, 1) = upper;
     for n = 1:length(N)
-        [V0, time] = cos2d("h", S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N(n), Nobs(j)); 
+        [V0, time] = cos2d2("h", S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N(n), Nobs(j)); 
         results_c(j, n + 3, :) = [V0, time]; 
         fprintf('Completed inner step: %i', n)   
     end
@@ -147,25 +147,26 @@ time_res_c =array2table(results_c(:,3:end,2), ...
             'VariableNames', varnames_t, 'RowNames', rownames)  
 
 %MC simulation of Heston model
+steps = 250;
+H = 0.1;
+T = 0.5;
 [S_r, V_r, time_r] = rough_heston_mc4(S0, v0, rho, kappa, theta, T, r, q, eta, H, npath, steps);
 results_r = NaN(length(Nobs), (length(N)+ 3));   %matrix to store results
 results_r(:, 3, 2) = time_r;          %store simulation time
-results_r(:, 3, 2) = 1;          %store simulation time
-
-N = 100;
 for j = 1:length(Nobs)
     %Store simulation result in first column!
-%     [price, lower, upper, ~] = barrier_prices_dm(S_r, K, L, Nobs(j), "uo", 1, r, T, 0.95); 
-%     results_r(j, 1, 1) = lower;
-%     results_r(j, 2, 1) = price;
-%     results_r(j, 3, 1) = upper;
+     [price, lower, upper, ~] = barrier_prices_dm(S_r, K, L, Nobs(j), "uo", 1, r, T, 0.95); 
+     results_r(j, 1, 1) = lower;
+     results_r(j, 2, 1) = price;
+     results_r(j, 3, 1) = upper;
     for n = 1:length(N)
-        [V0, time] = cos2d2("rh", S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N(n), Nobs(j), H, 0, 1.5, 200); 
+        [V0, time] = cos2d2("rh", S0, K, L, v0, r, q, eta, theta, rho, kappa, T, N(n), Nobs(j), H, 0, 1.4, 500); 
         results_r(j, n + 3, :) = [V0, time]; 
         fprintf('Completed inner step: %i', n)   
     end
     fprintf('Completed outer step: %i', j)   
 end
+
 %Nicer format table
 rownames=arrayfun(@num2str, Nobs,'uni',0);
 varnames_v = ['lower', 'mean', 'upper', arrayfun(@num2str, N,'uni',0)];
@@ -179,9 +180,20 @@ results = vertcat(results_c, results_r)
 values_results = results(:, :, 1)  %Values
 time_results = results(:, 3:end, 2)    %times
 
+%H = 0.1;
+%price = hrBarrier_mc(K,1000,1,1,1,T, 1, S0,r,q,v0,kappa,theta,eta,rho,H, npath, 250)
+%[S_r, V_r, time_r] =  rough_heston_mc4(S0, v0, rho, kappa, theta, T, r, q, eta, H, npath, 250);
+%price = barrier_prices_dm(S_r, K, 1000, 1, "uo", 1, r, T)
+% cos2d2("rh", S0, K, 1000, v0, r, q, eta, theta, rho, kappa, 0.5, 120, 1, 0.1, 0, 1.4)
+
+%cos2d2("rh", S0, K, 1000, v0, r, q, eta, theta, rho, kappa, 0.5, 120, 2, 0.1, 0, 1.4)
+
 %Check vanilla price!
 vanilla_prices(S_r, K, 1, r, T)
-cos2d2("rh", S0, K, 1000, v0, r, q, eta, theta, rho, kappa, T, 100, 1, 0.5, 0, 0.3, 200)
+T =0.5;
+H = 0.1;
+cos2d2("rh", S0, K, 120, v0, r, q, eta, theta, rho, kappa, T, 100, 5, H, 0, 1.3, 1000)
+
 
 %Determine a2 and b2 of rough Heston
 V_rh = V_r(1201, : );                                

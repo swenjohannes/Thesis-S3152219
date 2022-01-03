@@ -1,8 +1,7 @@
 function [phi,A0,B1,B2] = cf2dRoughHeston(u1,u2, x0,v0, r,kappa,theta,eta,rho,H,T,nstep)
-% clear all 
-% 
 % w = (0:12)'/12*pi;
-% 
+% u1 = w;
+% u2 = w;
 % v0 = 0.2^2;
 % kappa = 1.7;
 % theta = 0.22;
@@ -57,4 +56,3 @@ for m = 1:length(u2)
 %           + theta*kappa*sum((h(:, 1:end-1) + h(:,2:end))/2, 2) *dt ...
 %           + v0*sum((Dh(:, 1:end-1) + Dh(:,2:end))/2, 2) *dt);
 end
-

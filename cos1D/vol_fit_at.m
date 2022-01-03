@@ -48,6 +48,7 @@ for j = 1:length(T)
     x_opt = fmincon(err_func,x0,A,b,Aeq,beq,lb,ub,[],options);
     Xhs(j,:) = x_opt;
     x_opt = fmincon(err_func_hr,x0,[],[],[],[],lb,ub,[],options);
+    get_iv(K,pc,Tc, S0,r,q,x0)
     Xhr(j,:) = x_opt;
 end
 
@@ -75,7 +76,7 @@ xlabel('Strike')
 ylabel('Vol')
 title('Rough Heston per maturity')
 hold off
-%%
+%% Glob
 vol = vol_dat;
 err_func = @(x) sum(sum((vol - get_iv(K,pc,T, S0,r,q,x)).^2));
 
@@ -102,7 +103,7 @@ ylabel('Vol')
 title('Classic Heston global')
 hold off
 
-%%
+%% Global fit rough Heston
 vol = vol_dat;
 err_func = @(x) sum(sum((vol - get_ivhr(K,pc,T, S0,r,q,x,H)).^2));
 
