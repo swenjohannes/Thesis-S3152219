@@ -20,7 +20,7 @@ H = 0.5;
 
 
 %% Create results table N/M
-clear all
+%clear all
 parameter_set2
 T = 0.5;
 %MC simulation of Heston model
@@ -131,5 +131,4 @@ for j = u2
 
     phi_A(:, abs(j) + 1) = exp(1i * u1 * (r - q) * T + ...
                     kappa * theta * sum((psi(:, 1:end-1) + psi(:, 2:end))/2, 2) *dt);
-end
 end

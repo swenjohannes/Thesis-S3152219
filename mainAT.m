@@ -1,39 +1,49 @@
 %% Housekeeping
-clear, clc;
-close all
 folder = fileparts(which(mfilename)); 
 addpath(genpath(folder));              %load functions!
 
+%parameter_set2_at %Load parameter set
 parameter_set2 %Load parameter set
 
 %Additional parameters
 npath = 2e4; 
 steps = 200;
 N = 100;
-Nobs = 2;
+Nobs = 10;
 
 %% MC simulation
-tic()
-[S_c, V_c] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, steps);
-prices = barrier_prices_dm(S_c, K, L, Nobs, "uo", 1, r, T)
-Fmc = mean(S_c(end,:))
-toc()
 
-tic()
+% tic
+% [S_c, V_c] = heston_mc(S0, v0, rho, kappa, theta, T, r, q, eta, npath, steps);
+% prices = barrier_prices_dm(S_c, K, L, Nobs, "uo", 1, r, T);
+% Fmc = mean(S_c(end,:));
+% fprintf('Classic Heston MC: '),toc()
+
+seed = rng;
+
+tic
 nobs = Nobs;
 nstep = steps;
-price = hsBarrier_mc(K,L,1,1,1,T,nobs, S0,r,q,v0,kappa,theta,eta,rho, npath,nstep)
-toc()
+price = hsBarrier_mc(K,L,1,1,1,T,nobs, S0,r,q,v0,kappa,theta,eta,rho, npath,nstep,seed);
+fprintf(['Classic Heston MC: ' num2str(price) '\t']), toc()
 
-H=1/2;
 
-tic()
+tic
 nobs = Nobs;
 nstep = steps;
-price = hrBarrier_mc(K,L,1,1,1,T,nobs, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep)
-F = S0*exp((r-q)*T)
-toc()
+price = hrBarrier_mc(K,L,1,1,1,T,nobs, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep,seed);
+F = S0*exp((r-q)*T);
+fprintf(['Rough Heston MC: ' num2str(price) '\t']), toc()
 
+tic
+nobs = Nobs;
+nstep = steps;
+price = hrBarrier_mckr(K,L,1,1,1,T,nobs, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep,seed);
+F = S0*exp((r-q)*T);
+fprintf(['Rough Heston MC reset kernel: ' num2str(price) '\t']), toc()
+
+
+if 0
 
 tic()
 [S_r, V_r] = rough_heston_mc2(S0, v0, rho, kappa, theta, T, r, q, eta, H, npath, nstep);
@@ -45,7 +55,7 @@ toc()
 
 
 
-if 0
+
 %vanilla_prices(S_c, 80, 1, r, T)
 
 Nobs = 2;

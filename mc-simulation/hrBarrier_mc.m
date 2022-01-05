@@ -1,4 +1,4 @@
-function price = hrBarrier_mc(K,B,pc,du,io,T,nobs, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep)
+function price = hrBarrier_mc(K,B,pc,du,io,T,nobs, S0,r,q,v0,kappa,theta,eta,rho,H, npath,nstep,seed)
 %{
  Description: MC simulation of the Heston model using an euler scheme
               
@@ -26,13 +26,16 @@ function price = hrBarrier_mc(K,B,pc,du,io,T,nobs, S0,r,q,v0,kappa,theta,eta,rho
  References:
 
 %}
+if (exist ( 'seed' , 'var' )), rng(seed); end 
+
 tgrid = linspace(0,T,nstep+1);
 dt = tgrid(2) - tgrid(1);               %Time delta
-Kt = 1/gamma(H) * (tgrid(2:end).^(H-1/2))';
-S = S0*ones(npath, nstep+1);            %Matrix to store stock results
+alpha = H+0.5;
+Kt = 1/gamma(alpha) * (tgrid(2:end).^(alpha-1))';
+M = zeros(npath, nstep+1);             %Increments of the variance
+
 Y = log(S0)*ones(npath, nstep+1);       %Log price
 V = v0*ones(npath, nstep+1);            %Matrix to store variance results
-M = zeros(npath, nstep+1);             %Increments of the variance
 I = true(npath,1);                      %Matrix for knock indicator
 C = [1 rho; rho 1];
 U = chol(C);
@@ -49,7 +52,7 @@ for i = 1:nstep
   M(:,i) = sqrt(V(:,i)).*Z(:,2)*sqrt(dt)*eta;
   Kts = flipud(Kt(1:i));
   dV = ((theta - V(:,1:i)) *(kappa*dt) + M(:,1:i)) * Kts;
-  V(:,i+1) = max(V(:,1) + dV,0);
+  V(:,i+1) = max(v0 + dV,0);
   
   if any(Nobs == i+1)
     I = I & (Y(:,i+1) < logB);
@@ -57,7 +60,8 @@ for i = 1:nstep
 end
 S = exp(Y);
 ST = S(:,end);
-Fmc = mean(ST)
+Fmc = mean(ST);
+disp(['Fmc = ' num2str(Fmc)])
 
 price = zeros(size(K));
 for i = 1:length(K)
