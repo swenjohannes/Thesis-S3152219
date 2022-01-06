@@ -51,7 +51,7 @@ for i = 1:nstep
   Y(:,i+1) = Y(:,i) + dY;
   
   M(:,i) = sqrt(V(:,i)).*Z(:,2)*sqrt(dt)*eta;
-  Kts = flipud(Kt(j:i));
+  Kts = flipud(Kt(1:i-j+1));
   dV = ((theta - V(:,j:i)) *(kappa*dt) + M(:,j:i)) * Kts;
   V(:,i+1) = max(V(:,j) + dV,0);
   
